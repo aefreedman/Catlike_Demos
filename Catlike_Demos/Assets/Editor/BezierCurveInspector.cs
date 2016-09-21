@@ -10,6 +10,8 @@ public class BezierCurveInspector : Editor
 
     private const int LineSteps = 10;
 
+    private const float DirectionScale = 0.5f;
+
     private void OnSceneGUI()
     {
         _curve = target as BezierCurve;
@@ -19,24 +21,15 @@ public class BezierCurveInspector : Editor
         var p0 = ShowPoint(0);
         var p1 = ShowPoint(1);
         var p2 = ShowPoint(2);
+        var p3 = ShowPoint(3);
 
         Handles.color = Color.gray;
         Handles.DrawLine(p0, p1);
-        Handles.DrawLine(p1, p2);
+        Handles.DrawLine(p2, p3);
 
-        Handles.color = Color.white;
-        var lineStart = _curve.GetPoint(0f);
-        Handles.color = Color.green;
-        Handles.DrawLine(lineStart, lineStart + _curve.GetDirection(0f));
-        for (var i = 0; i < LineSteps; i++)
-        {
-            var lineEnd = _curve.GetPoint(i/(float) LineSteps);
-            Handles.color = Color.white;
-            Handles.DrawLine(lineStart, lineEnd);
-            Handles.color = Color.green;
-            Handles.DrawLine(lineEnd, lineEnd + _curve.GetDirection(i / (float) LineSteps));
-            lineStart = lineEnd;
-        }
+        ShowDirections();
+        Handles.DrawBezier(p0, p3, p1, p2, Color.white, null, 2f);
+
     }
 
     private Vector3 ShowPoint(int index)
@@ -51,5 +44,17 @@ public class BezierCurveInspector : Editor
             _curve.Points[index] = _handleTransform.InverseTransformPoint(point);
         }
         return point;
+    }
+
+    private void ShowDirections()
+    {
+        Handles.color = Color.green;
+        Vector3 point = _curve.GetPoint(0f);
+        Handles.DrawLine(point, point + _curve.GetDirection(0f) * DirectionScale);
+        for (int i = 0; i < LineSteps; i++)
+        {
+            point = _curve.GetPoint(i / (float) LineSteps);
+            Handles.DrawLine(point, point + _curve.GetDirection(i / (float) LineSteps) * DirectionScale);
+        }
     }
 }
