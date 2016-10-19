@@ -46,6 +46,7 @@ public class BezierCurveInspector : Editor
         return point;
     }
 
+
     private void ShowDirections()
     {
         Handles.color = Color.green;
